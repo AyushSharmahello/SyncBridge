@@ -17,9 +17,11 @@ const Settings = (props: Props) => {
                     Add or update your information
                 </p>
             </div>
-            <ProfileForm />    
+            <ProfilePicture></ProfilePicture> 
+            <ProfileForm />   
+            
         </div>
-        <ProfilePicture></ProfilePicture>
+        
     </div>
   )
 }
