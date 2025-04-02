@@ -1,31 +1,55 @@
 'use client'
-import React, { useState } from 'react'
+
+import React, { use, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { z }  from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { EditUserProfileSchema } from '@/lib/types'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../ui/form'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { Loader2 } from 'lucide-react'
-type Props = {}
 
-const ProfileForm = (props: Props) => {
-    const [isLoading, setIsLoading] = useState(false)
-    const form = useForm<z.infer<typeof EditUserProfileSchema>>({
-        mode: 'onChange',
-        resolver: zodResolver(EditUserProfileSchema),
-        defaultValues: {
-          name: '',
-          email: '',
-        },
-      })
+type Props = {
+  user: any
+  onUpdate?: any
+}
+
+const ProfileForm = ({ user, onUpdate }: Props) => {
+  const [isLoading, setIsLoading] = useState(false)
+  const form = useForm<z.infer<typeof EditUserProfileSchema>>({
+    mode: 'onChange',
+    resolver: zodResolver(EditUserProfileSchema),
+    defaultValues: {
+      name: user.name,
+      email: user.email,
+    },
+  })
+
+  const handleSubmit = async (
+    values: z.infer<typeof EditUserProfileSchema>
+  ) => {
+    setIsLoading(true)
+    await onUpdate(values.name)
+    setIsLoading(false)
+  }
+
+  useEffect(() => {
+    form.reset({ name: user.name, email: user.email })
+  }, [user])
 
   return (
     <Form {...form}>
       <form
         className="flex flex-col gap-6"
-        onSubmit={()=>{}}
+        onSubmit={form.handleSubmit(handleSubmit)}
       >
         <FormField
           disabled={isLoading}
@@ -45,7 +69,6 @@ const ProfileForm = (props: Props) => {
           )}
         />
         <FormField
-          disabled={true}
           control={form.control}
           name="email"
           render={({ field }) => (
@@ -54,7 +77,7 @@ const ProfileForm = (props: Props) => {
               <FormControl>
                 <Input
                   {...field}
-                  
+                  disabled={true}
                   placeholder="Email"
                   type="email"
                 />
@@ -63,7 +86,7 @@ const ProfileForm = (props: Props) => {
             </FormItem>
           )}
         />
-         <Button
+        <Button
           type="submit"
           className="self-start hover:bg-[#2F006B] hover:text-white "
         >
@@ -76,7 +99,7 @@ const ProfileForm = (props: Props) => {
             'Save User Settings'
           )}
         </Button>
-        </form>
+      </form>
     </Form>
   )
 }
